@@ -48,3 +48,6 @@ function gb() { git branch @args }
 function grv() { git remote -v @args }
 Remove-Item -Force alias:gl; function gl() { git log @args }
 function gd() { git diff @args }
+
+# Visual Studio settings
+. "$PSScriptRoot\visual-studio-vars.ps1"
