@@ -6,5 +6,3 @@ $vcvarsPath = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxili
     $name, $value = $_ -split '='
     Set-Item -Path "Env:\$name" -Value $value
 }
-
-Write-Output "Visual Studio environment variables have been set."

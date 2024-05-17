@@ -161,6 +161,10 @@
                 "action": "nextTab"
             },
             "keys": "alt+w"
+        },
+        {
+            "command": "duplicateTab",
+            "keys": "ctrl+shift+t"
         }
     ],
     "copyFormatting": "none",
