@@ -105,26 +105,32 @@ $env:VCPKG_ROOT = 'C:\Users\MihirLuthra\vcpkg'
 
 # Just a function to do some setup later because powershell load times are slow.
 # - posh git
-function aaa() {
-  ## get fzf on ctrl+r
-  ## NOT DOING. Using a() function instead to invoke fzf. Registering ctrl + r is slow.
-  # Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
-  # echo "fzf on ctrl r registered"
+function a() {
+  # get fzf on ctrl+r
+  Set-PsFzfOption -PSReadlineChordReverseHistory 'Ctrl+r'
 
   Import-Module posh-git
   echo "posh-git imported"
 }
 
-# invoke fzf history
-function a() {
-  param(
-    [int]$historySize = 2000
-  )
-  $historyPath = (Get-PSReadlineOption).HistorySavePath
-  $contents = Get-Content -Path $historyPath -Tail $historySize
-  [array]::Reverse($contents)
-  $selectedCommand = $contents | fzf --height 40% --cycle
-  if ($selectedCommand) {
-    Invoke-Expression $selectedCommand
-  }
-}
+## DOESN'T WORK
+# invoke reverse fzf history
+# function fzf-wrapper() {
+#   param(
+#     [int]$historySize = 5000
+#   )
+#   $historyPath = (Get-PSReadlineOption).HistorySavePath
+#   $contents = Get-Content -Path $historyPath -Tail $historySize
+#   [array]::Reverse($contents)
+#   $selectedCommand = $contents | fzf --cycle 
+#   if ($selectedCommand) {
+#     Write-Host -nonewline $selectedCommand
+#   } else {
+#     Write-Host -nonewline "Nothing selected"
+#   }
+# }
+
+# Set-PSReadLineKeyHandler -Chord 'Ctrl+r' -ScriptBlock {
+#   fzf-wrapper
+# }
+
