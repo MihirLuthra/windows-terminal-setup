@@ -1,9 +1,7 @@
-# get fzf on ctrl+r
-Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 # zsh like tab completion
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 
-# Add path to Environment.
+# Function to add input path to System Environment.
 function Add-Path() {
 	param (
 		[Parameter(Mandatory = $True)]
@@ -27,15 +25,51 @@ function Add-Path() {
 	}
  }
 
+# Add path to powershell env
+function PS-Add-Path() {
+	param (
+		[Parameter(Mandatory = $True)]
+		[string]$Directory
+	)
+
+  $currentPath = $env:Path
+
+  if ($currentPath -notcontains $Directory) {
+    $newPath = $currentPath + ";$Directory"
+      $env:Path = $newPath
+      Write-Host "Added '$Directory' to Current PS Path."
+  } else {
+    Write-Host "Directory '$Directory' is already in the Path."
+  }
+ }
+
 # Aliases
 New-Alias -Name gh -Value Get-Help
 Remove-Item alias:type; Set-Alias -Name type -Value Get-Command
 New-Alias -Name vim -Value nvim
 New-Alias -Name vi -Value nvim
+Remove-Item alias:cd; Set-Alias -Name cd -Value pushd
 
 # Functions
+$windowsTerminalSetupDir = 'C:\Users\MihirLuthra\windows-terminal-setup'
 function n() {
   cd C:\Users\MihirLuthra\AppData\Local\nvim
+}
+function wp() {
+  nvim $windowsTerminalSetupDir\PROFILE.CurrentUserCurrentHost.ps1
+}
+function wts() {
+  cd $windowsTerminalSetupDir
+}
+function wtso() {
+  cd $windowsTerminalSetupDir
+  nvim PROFILE.CurrentUserCurrentHost.ps1
+}
+function cdw() {
+  cd ~
+}
+function cs() {
+  cd C:\src
 }
 
 # Git
@@ -45,12 +79,15 @@ Remove-Item -Force alias:gc; function gc() { git commit -m @args }
 Remove-Item -Force alias:gcm; function gcm() { git commit --amend @args }
 function gr() { git rebase -i @args }
 function gb() { git branch @args }
+function gch() { git checkout @args }
 function grv() { git remote -v @args }
 Remove-Item -Force alias:gl; function gl() { git log @args }
 function gd() { git diff @args }
 
-# Visual Studio settings
-. "$PSScriptRoot\visual-studio-vars.ps1"
+# Sets vars from Visual Studio
+function VisualStudio-Setup() {
+  . "$PSScriptRoot\visual-studio-vars.ps1"
+}
 
 function prompt {
   $loc = $executionContext.SessionState.Path.CurrentLocation;
@@ -61,4 +98,33 @@ function prompt {
     }
   $out += "PS $loc$('>' * ($nestedPromptLevel + 1)) ";
   return $out
+}
+
+# vcpkg
+$env:VCPKG_ROOT = 'C:\Users\MihirLuthra\vcpkg'
+
+# Just a function to do some setup later because powershell load times are slow.
+# - posh git
+function aaa() {
+  ## get fzf on ctrl+r
+  ## NOT DOING. Using a() function instead to invoke fzf. Registering ctrl + r is slow.
+  # Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+  # echo "fzf on ctrl r registered"
+
+  Import-Module posh-git
+  echo "posh-git imported"
+}
+
+# invoke fzf history
+function a() {
+  param(
+    [int]$historySize = 2000
+  )
+  $historyPath = (Get-PSReadlineOption).HistorySavePath
+  $contents = Get-Content -Path $historyPath -Tail $historySize
+  [array]::Reverse($contents)
+  $selectedCommand = $contents | fzf --height 40% --cycle
+  if ($selectedCommand) {
+    Invoke-Expression $selectedCommand
+  }
 }
