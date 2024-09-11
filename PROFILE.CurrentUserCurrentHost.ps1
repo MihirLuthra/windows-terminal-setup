@@ -108,14 +108,10 @@ $env:VCPKG_ROOT = 'C:\Users\MihirLuthra\vcpkg'
 function a() {
   # get fzf on ctrl+r
   Set-PsFzfOption -PSReadlineChordReverseHistory 'Ctrl+r'
-
-  Import-Module posh-git
-  echo "posh-git imported"
 }
 
-## DOESN'T WORK
-# invoke reverse fzf history
-# function fzf-wrapper() {
+## invoke reverse fzf history
+# function a() {
 #   param(
 #     [int]$historySize = 5000
 #   )
@@ -124,13 +120,8 @@ function a() {
 #   [array]::Reverse($contents)
 #   $selectedCommand = $contents | fzf --cycle 
 #   if ($selectedCommand) {
-#     Write-Host -nonewline $selectedCommand
+#     Add-Content -Path $historyPath -Value "$selectedCommand"
 #   } else {
 #     Write-Host -nonewline "Nothing selected"
 #   }
 # }
-
-# Set-PSReadLineKeyHandler -Chord 'Ctrl+r' -ScriptBlock {
-#   fzf-wrapper
-# }
-
